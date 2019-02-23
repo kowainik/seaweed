@@ -1,6 +1,5 @@
 module Seaweed
-       ( someFunc
+       ( module Seaweed
        ) where
 
-someFunc :: IO ()
-someFunc = putStrLn ("someFunc" :: String)
+import Seaweed.Types as Seaweed
