@@ -1,12 +1,20 @@
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE FlexibleContexts   #-}
+
 {- | Types for @CV@ representation.
 -}
 
 module Seaweed.Types
        ( Seaweed (..)
+       , seaweedCodec
        ) where
 
 import Data.Text (Text)
 import Data.Time (Day)
+import GHC.Generics (Generic)
+import Toml (TomlCodec)
+
+import qualified Toml
 
 
 {- | Main type that contains all necessary information for @CV@ creation.
@@ -34,12 +42,21 @@ data Seaweed = Seaweed
     , seaweedSkills     :: ![Text]
       -- | Other information: hobbies, advantages etc.
     , seaweedOther      :: !(Maybe Text)
-    } deriving (Show, Eq)
+    } deriving (Show, Eq, Generic)
+
+seaweedCodec :: TomlCodec Seaweed
+seaweedCodec = Toml.stripTypeNameCodec
 
 data Location = Location
     { locationCountry :: Text
     , locationCity    :: Text
-    } deriving (Show, Eq)
+    } deriving (Show, Eq, Generic)
+
+instance Toml.HasCodec Location where
+    hasCodec = Toml.table Toml.stripTypeNameCodec
+
+instance Toml.HasItemCodec Location where
+    hasItemCodec = Right Toml.stripTypeNameCodec
 
 data Work = Work
     { workPosition    :: !Text
@@ -48,13 +65,19 @@ data Work = Work
     , workEnd         :: !(Maybe Day)  -- ^ To period in @YYYY-MM-DD@ format (optional).
     , workLocation    :: !(Maybe Location)
     , workDescription :: !Text
-    } deriving (Show, Eq)
+    } deriving (Show, Eq, Generic)
+
+instance Toml.HasItemCodec Work where
+    hasItemCodec = Right Toml.stripTypeNameCodec
 
 -- | Information about the company.
 data Company = Company
     { companyName :: !Text
     , companyLink :: !Text
-    } deriving (Show, Eq)
+    } deriving (Show, Eq, Generic)
+
+instance Toml.HasCodec Company where
+    hasCodec = Toml.table Toml.stripTypeNameCodec
 
 -- | Information about the schools, universities, courses etc.
 data Education = Education
@@ -65,10 +88,16 @@ data Education = Education
     , educationEndYear     :: !Int
     , educationFaculty     :: !(Maybe Text)
     , educationDescription :: !(Maybe Text)
-    } deriving (Show, Eq)
+    } deriving (Show, Eq, Generic)
+
+instance Toml.HasItemCodec Education where
+    hasItemCodec = Right Toml.stripTypeNameCodec
 
 -- | Languages level information.
 data Language = Language
     { languageName  :: !Text
     , languageLevel :: !Text
-    } deriving (Show, Eq)
+    } deriving (Show, Eq, Generic)
+
+instance Toml.HasItemCodec Language where
+    hasItemCodec = Right Toml.stripTypeNameCodec

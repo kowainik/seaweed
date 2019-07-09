@@ -4,7 +4,7 @@ language: haskell
 git:
   depth: 5
 
-cabal: "2.0"
+cabal: "2.4"
 
 cache:
   directories:
@@ -14,16 +14,16 @@ cache:
 
 matrix:
   include:
-  - ghc: 8.4.4
-  - ghc: 8.6.3
-  
-  - ghc: 8.4.4
-    env: STACK_YAML="$TRAVIS_BUILD_DIR/stack-8.4.4.yaml"
-  
-  - ghc: 8.6.3
+  - ghc: 8.6.5
+
+  - ghc: 8.6.5
     env: STACK_YAML="$TRAVIS_BUILD_DIR/stack.yaml"
 
 install:
+  # HLint check
+  - curl https://raw.githubusercontent.com/kowainik/relude/55968311244690f5cc8b4484a37a63d988ea2ec4/.hlint.yaml -o .hlint-relude.yaml
+  - curl -sSL https://raw.github.com/ndmitchell/neil/master/misc/travis.sh | sh -s -- hlint -h .hlint-relude.yaml .
+
   - |
     if [ -z "$STACK_YAML" ]; then
       cabal new-update
@@ -37,13 +37,10 @@ install:
 script:
   - |
     if [ -z "$STACK_YAML" ]; then
-       cabal new-test
+       cabal new-test --enable-tests
     else
-      stack build --system-ghc --test --bench --no-run-benchmarks --no-terminal --ghc-options=-Werror
+      stack test --system-ghc
     fi
-
-  # HLint check
-  - curl -sSL https://raw.github.com/ndmitchell/neil/master/misc/travis.sh | sh -s -- hlint .
 
 notifications:
   email: false

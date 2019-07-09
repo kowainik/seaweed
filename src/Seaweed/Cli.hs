@@ -6,7 +6,6 @@
        ( runSeaweed
        ) where
 
-import Data.List (intercalate)
 import Data.Version (showVersion)
 import Development.GitRev (gitCommitDate, gitDirty, gitHash)
 import Options.Applicative (Parser, ParserInfo, execParser, fullDesc, help, helper, info,
@@ -29,7 +28,7 @@ cliParser = info ( helper <*> versionP <*> seaweedP )
 
  -- | Commands parser.
 seaweedP :: Parser ()
-seaweedP = pure ()
+seaweedP = pass
 
  -- | Show the version of the tool.
 versionP :: Parser (a -> a)
